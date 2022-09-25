@@ -6,5 +6,6 @@
 ## Development Setup on Apple Silicon Mac
 - Install Miniforge. https://developer.apple.com/metal/tensorflow-plugin/
 - `conda env create -f=conda_env.yml -n tts-world`
+- `conda activate tts-world`
 
 
