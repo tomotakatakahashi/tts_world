@@ -7,7 +7,7 @@
 - `conda install -c apple tensorflow-deps`
 - `python -m pip install tensorflow-macos`
 - `conda install black pytest pylint isort mypy`
-
+- `conda env export -n tts-world > conda_env.yml`
 
 
 WIP.
