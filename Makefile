@@ -7,10 +7,10 @@ test:
 	pylint $(PACKAGE_DIR) || exit 0
 	pytest $(PACKAGE_DIR) --capture=no
 
-jsut_ver1.1.zip:
+${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"
 
-jsut_ver1.1/: jsut_ver1.1.zip
+${DATASET_DIR}/jsut_ver1.1/: jsut_ver1.1.zip
 	unzip $<
 
 ../jsut-label/:

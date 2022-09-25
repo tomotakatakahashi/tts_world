@@ -7,5 +7,5 @@
 - Install Miniforge. https://developer.apple.com/metal/tensorflow-plugin/
 - `conda env create -f=conda_env.yml -n tts-world`
 - `conda activate tts-world`
-
+- `python -m pip install -e .`
 
