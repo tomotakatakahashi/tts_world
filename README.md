@@ -4,13 +4,12 @@
 - 『Pythonで学ぶ音声合成』 Chapter 5 and 6 with TensorFlow
 
 ## Development Setup on Apple Silicon Mac
-- Install Miniforge. https://developer.apple.com/metal/tensorflow-plugin/
-- `conda env create -f=conda_env.yml -n tts-world`
-- `conda activate tts-world`
-- `python -m pip install -e .`
+- `brew install python@3.9`
+- `python3.9 -m venv .venv`
+- `source .venv/bin/activate`
+- `pip install -U pip`
+- `pip install tensorflow-macos black isort pytest pylint librosa notebook`
+- Install [pyworld](https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder) by following "Building from Source"
+- `pip install -e .`
 
-### Update the env settings file
-- `conda env export > conda_env.yml`
 
-## Tips
-- If you see `Library not loaded: '@rpath/libcblas.3.dylib'` error, please try `python -m pip install --force-reinstall numpy==1.22.4`.

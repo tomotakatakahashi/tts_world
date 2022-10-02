@@ -1,2 +1,4 @@
 tts_world.egg-info/
 __pychache__/
+
+.venv/
