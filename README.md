@@ -9,3 +9,5 @@
 - `conda activate tts-world`
 - `python -m pip install -e .`
 
+## Tips
+- If you see `Library not loaded: '@rpath/libcblas.3.dylib'` error, please try `python -m pip install --force-reinstall numpy==1.22.4`.
