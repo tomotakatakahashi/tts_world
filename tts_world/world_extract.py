@@ -15,8 +15,8 @@ def _get_args():
 
 def world_extract():
     wav_path = Path.home() / "datasets/jsut_ver1.1/basic5000/wav/BASIC5000_0001.wav"
-    wav, sr = librosa.load(wav_path)
-    f0, sp, ap = pw.wav2world(wav, sr)
+    wav, sr = librosa.load(str(wav_path))
+    f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
 
     print(f0.shape)
     print("TODO")
