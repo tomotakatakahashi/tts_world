@@ -12,6 +12,7 @@ dependencies:
   - ca-certificates=2022.07.19=hca03da5_0
   - certifi=2022.9.14=py39hca03da5_0
   - click=8.0.4=py39hca03da5_0
+  - cython=0.29.32=py39hc377ac9_0
   - dill=0.3.4=pyhd3eb1b0_0
   - grpcio=1.42.0=py39h95c9599_0
   - h5py=3.6.0=py39h7fe8675_0
@@ -53,6 +54,7 @@ dependencies:
   - pytest=7.1.2=py39hca03da5_0
   - python=3.9.13=hc596b02_0_cpython
   - python_abi=3.9=2_cp39
+  - pyworld=0.3.0=py39hc86685f_2
   - readline=8.1.2=h1a28f6b_1
   - setuptools=63.4.1=py39hca03da5_0
   - six=1.16.0=pyhd3eb1b0_1
