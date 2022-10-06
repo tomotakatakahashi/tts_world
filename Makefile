@@ -6,6 +6,7 @@ test:
 	black $(PACKAGE_DIR)
 	pylint $(PACKAGE_DIR) || exit 0
 	pytest $(PACKAGE_DIR) --capture=no
+	mypy --disallow-untyped-defs --no-implicit-optional $(PACKAGE_DIR)
 
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"
