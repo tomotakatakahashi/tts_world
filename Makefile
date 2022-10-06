@@ -1,5 +1,7 @@
 PACKAGE_DIR := tts_world
 
+JSUT_LABEL_DIR := ../jsut_label/
+
 .PHONY: test
 test:
 	isort $(PACKAGE_DIR)
@@ -8,15 +10,19 @@ test:
 	pytest $(PACKAGE_DIR) --capture=no
 	mypy --disallow-untyped-defs --no-implicit-optional $(PACKAGE_DIR)
 
+generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
+	python -m tts_world.preprocess duration
+
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"
 
 ${DATASET_DIR}/jsut_ver1.1/: jsut_ver1.1.zip
 	unzip $<
 
-../jsut-label/:
+$(JSUT_LABEL_DIR):
 	echo "Please clone jsut-label from here. git@github.com:sarulab-speech/jsut-label.git"
 	echo "1978271ca6212e1ea742da8f149160f5679e8971"
 
 .PHONY: clean
 clean:
+	rm -r generated/
