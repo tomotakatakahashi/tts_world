@@ -1,4 +1,5 @@
-tts_world.egg-info/
-__pychache__/
+/tts_world.egg-info/
+/__pychache__/
 
-.venv/
+/.venv/
+/generated/
