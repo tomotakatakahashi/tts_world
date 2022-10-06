@@ -17,4 +17,4 @@ dependencies = [
 [project.optional-dependencies]
 
 [project.scripts]
-world-extract = "tts_world.world_extract:world_extract"
+#world-extract = "tts_world.world_extract:world_extract"
