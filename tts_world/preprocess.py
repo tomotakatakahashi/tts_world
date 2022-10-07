@@ -10,6 +10,7 @@ import pyworld as pw
 import ttslearn
 from nnmnkwii.io import hts
 from nnmnkwii.frontend import merlin
+from tqdm import tqdm
 
 _JSUT_BASIC5000_LABEL_DIR = Path.home() / "projects/jsut-label/labels/basic5000/"
 _JSUT_BASIC5000_WAV_DIR = Path.home() / "datasets/jsut_ver1.1/basic5000/wav/"
@@ -70,7 +71,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as exec:
-        results = exec.map(args.process, input_paths)
+        results = list(tqdm(exec.map(args.process, input_paths)))
 
     for input_path, result in zip(input_paths, results):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
