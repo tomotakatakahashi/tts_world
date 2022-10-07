@@ -8,8 +8,8 @@ import librosa
 import numpy as np
 import pyworld as pw
 import ttslearn
-from nnmnkwii.io import hts
 from nnmnkwii.frontend import merlin
+from nnmnkwii.io import hts
 from tqdm import tqdm
 
 _JSUT_BASIC5000_LABEL_DIR = Path.home() / "projects/jsut-label/labels/basic5000/"
@@ -28,7 +28,7 @@ def _linguistic(labels_path: Path) -> np.array:
     labels = hts.load(labels_path)
     lng = merlin.linguistic_features(labels, binary_dict, numeric_dict)
     return lng
-    
+
 
 def _acoustic(wav_path: Path) -> np.array:
     wav, sr = librosa.load(str(wav_path))
@@ -37,6 +37,7 @@ def _acoustic(wav_path: Path) -> np.array:
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
     return aco
+
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -80,10 +81,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-"""
-    wav_path = Path.home() / "datasets/jsut_ver1.1/basic5000/wav/BASIC5000_0001.wav"
-    wav, sr = librosa.load(str(wav_path))
-    f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
-"""
