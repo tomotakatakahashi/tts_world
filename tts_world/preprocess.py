@@ -6,6 +6,7 @@ from pathlib import Path
 import librosa
 import numpy as np
 import pyworld as pw
+import ttslearn
 from nnmnkwii.io import hts
 from nnmnkwii.frontend import merlin
 
@@ -13,11 +14,18 @@ _JSUT_BASIC5000_LABEL_DIR = Path.home() / "projects/jsut-label/labels/basic5000/
 _GENERATED_DIR = Path.cwd() / "generated"
 
 
-def _duration(label_path: Path) -> np.array:
-    label = hts.load(label_path)
-    dur = merlin.duration_features(label)
+def _duration(labels_path: Path) -> np.array:
+    labels = hts.load(labels_path)
+    dur = merlin.duration_features(labels)
     return dur
 
+
+def _linguistic(labels_path: Path) -> np.array:
+    binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
+    labels = hts.load(labels_path)
+    lng = merlin.linguistic_features(labels, binary_dict, numeric_dict)
+    return lng
+    
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -29,6 +37,11 @@ def _get_args() -> argparse.Namespace:
     duration_parser.set_defaults(process=_duration)
     duration_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
     duration_parser.set_defaults(output_dir=_GENERATED_DIR / "duration")
+
+    linguistic_parser = subparsers.add_parser("linguistic")
+    linguistic_parser.set_defaults(process=_linguistic)
+    linguistic_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
+    linguistic_parser.set_defaults(output_dir=_GENERATED_DIR / "linguistic")
 
     args = parser.parse_args()
     return args

@@ -13,6 +13,9 @@ test:
 generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 	python -m tts_world.preprocess duration
 
+generated/linguistic: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
+	python -m tts_world.preprocess linguistic
+
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"
 
