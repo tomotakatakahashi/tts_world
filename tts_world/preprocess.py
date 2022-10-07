@@ -1,6 +1,7 @@
 """Preprocess script for JSUT dataset."""
 
 import argparse
+import concurrent
 from pathlib import Path
 
 import librosa
@@ -54,7 +55,8 @@ def main() -> None:
     input_paths = sorted(args.input_dir.glob("*"))
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    results = [args.process(input_path) for input_path in input_paths]
+    with concurrent.futures.ProcessPoolExecutor() as exec:
+        results = exec.map(args.process, input_paths)
 
     for input_path, result in zip(input_paths, results):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
