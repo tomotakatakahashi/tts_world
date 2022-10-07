@@ -1,6 +1,8 @@
 PACKAGE_DIR := tts_world
 
 JSUT_LABEL_DIR := ../jsut_label/
+JSUT_WAV_DIR := ../../datasets/jsut_ver1.1/basic5000/wav/
+
 
 .PHONY: test
 test:
@@ -15,6 +17,9 @@ generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 
 generated/linguistic: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 	python -m tts_world.preprocess linguistic
+
+generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR)
+	python -m tts_world.preprocess acoustic
 
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"

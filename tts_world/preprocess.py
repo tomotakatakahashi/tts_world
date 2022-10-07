@@ -12,6 +12,7 @@ from nnmnkwii.io import hts
 from nnmnkwii.frontend import merlin
 
 _JSUT_BASIC5000_LABEL_DIR = Path.home() / "projects/jsut-label/labels/basic5000/"
+_JSUT_BASIC5000_WAV_DIR = Path.home() / "datasets/jsut_ver1.1/basic5000/wav/"
 _GENERATED_DIR = Path.cwd() / "generated"
 
 
@@ -28,6 +29,14 @@ def _linguistic(labels_path: Path) -> np.array:
     return lng
     
 
+def _acoustic(wav_path: Path) -> np.array:
+    wav, sr = librosa.load(str(wav_path))
+    # TODO: Use world_spss_params
+    f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
+    aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
+    assert aco.shape[-1] == 1 + 513 + 513
+    return aco
+
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", type=Path, default=None)
@@ -43,6 +52,11 @@ def _get_args() -> argparse.Namespace:
     linguistic_parser.set_defaults(process=_linguistic)
     linguistic_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
     linguistic_parser.set_defaults(output_dir=_GENERATED_DIR / "linguistic")
+
+    acoustic_parser = subparsers.add_parser("acoustic")
+    acoustic_parser.set_defaults(process=_acoustic)
+    acoustic_parser.set_defaults(input_dir=_JSUT_BASIC5000_WAV_DIR)
+    acoustic_parser.set_defaults(output_dir=_GENERATED_DIR / "acoustic")
 
     args = parser.parse_args()
     return args
