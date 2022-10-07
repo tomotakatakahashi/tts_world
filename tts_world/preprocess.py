@@ -6,14 +6,17 @@ from pathlib import Path
 import librosa
 import numpy as np
 import pyworld as pw
+from nnmnkwii.io import hts
+from nnmnkwii.frontend import merlin
 
 _JSUT_BASIC5000_LABEL_DIR = Path.home() / "projects/jsut-label/labels/basic5000/"
 _GENERATED_DIR = Path.cwd() / "generated"
 
 
-def _duration(input_path: Path) -> np.array:
-    # TODO: impl
-    return np.array([0])
+def _duration(label_path: Path) -> np.array:
+    label = hts.load(label_path)
+    dur = merlin.duration_features(label)
+    return dur
 
 
 def _get_args() -> argparse.Namespace:
@@ -42,7 +45,6 @@ def main() -> None:
 
     for input_path, result in zip(input_paths, results):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
-        print(output_path)
         np.save(output_path, result)
 
 
