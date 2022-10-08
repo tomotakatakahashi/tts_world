@@ -74,6 +74,17 @@ def _get_args() -> argparse.Namespace:
     return args
 
 
+def _normalize(results):
+    minimum = np.min([np.min(result, axis=0) for result in results])
+    maximum = np.max([np.max(result, axis=0) for result in results])
+
+    results_normalized = [
+        np.divide(result - np.expand_dims(minimum, axis=0), np.expand_dims(maximum - minimum, axis=0), out=np.zeros_like(result), where=(maximum-minimum) != 0)
+        for result in results
+    ]
+
+    return results_normalized, minimum, maximum
+
 def main() -> None:
     """The main function."""
 
@@ -84,7 +95,11 @@ def main() -> None:
     with concurrent.futures.ProcessPoolExecutor() as exec:
         results = list(tqdm(exec.map(args.process, input_paths)))
 
-    for input_path, result in zip(input_paths, results):
+    results_normalized, minimum, maximum = _normalize(results)
+
+    np.save(args.output_dir / "minimum.npy", minimum)
+    np.save(args.output_dir / "maximum.npy", maximum)
+    for input_path, result in zip(input_paths, results_normalized):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
         np.save(output_path, result)
 
