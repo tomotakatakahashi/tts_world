@@ -23,22 +23,22 @@ def _duration(labels_path: Path) -> np.array:
     return dur
 
 
-def _linguistic(labels_path: Path) -> np.array:
+def _linguistic_impl(labels_path: Path, add_frame_features=False, subphone_features=None) -> np.array:
     binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
     labels = hts.load(labels_path)
-    lng = merlin.linguistic_features(labels, binary_dict, numeric_dict)
+    lng = merlin.linguistic_features(labels, binary_dict, numeric_dict, add_frame_features=add_frame_features, subphone_features=subphone_features)
     return lng
 
+def _linguistic(labels_path: Path) -> np.array:
+    return _linguistic_impl(labels_path)
+
 def _linguistic_frame(labels_path: Path) -> np.array:
-    binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
-    labels = hts.load(labels_path)
-    lng = merlin.linguistic_features(labels, binary_dict, numeric_dict, add_frame_features=True, subphone_features='coarse_coding')
-    return lng
+    return _linguistic_impl(labels_path, add_frame_features=True, subphone_features='coarse_coding')
 
 def _acoustic(wav_path: Path) -> np.array:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
-    # TODO: time length is the same as linguistic?
+    # TODO: time length is the same as linguistic_frame?
     f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
