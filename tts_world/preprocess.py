@@ -29,6 +29,11 @@ def _linguistic(labels_path: Path) -> np.array:
     lng = merlin.linguistic_features(labels, binary_dict, numeric_dict)
     return lng
 
+def _linguistic_frame(labels_path: Path) -> np.array:
+    binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
+    labels = hts.load(labels_path)
+    lng = merlin.linguistic_features(labels, binary_dict, numeric_dict, add_frame_features=True, subphone_features='coarse_coding')
+    return lng
 
 def _acoustic(wav_path: Path) -> np.array:
     wav, sr = librosa.load(str(wav_path))
@@ -38,7 +43,6 @@ def _acoustic(wav_path: Path) -> np.array:
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
     return aco
-
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -55,6 +59,11 @@ def _get_args() -> argparse.Namespace:
     linguistic_parser.set_defaults(process=_linguistic)
     linguistic_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
     linguistic_parser.set_defaults(output_dir=_GENERATED_DIR / "linguistic")
+
+    linguistic_frame_parser = subparsers.add_parser("linguistic_frame")
+    linguistic_frame_parser.set_defaults(process=_linguistic_frame)
+    linguistic_frame_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
+    linguistic_frame_parser.set_defaults(output_dir=_GENERATED_DIR / "linguistic_frame")
 
     acoustic_parser = subparsers.add_parser("acoustic")
     acoustic_parser.set_defaults(process=_acoustic)

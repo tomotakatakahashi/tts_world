@@ -17,6 +17,8 @@ generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 
 generated/linguistic: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 	python -m tts_world.preprocess linguistic
+generated/linguistic_frame: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
+	python -m tts_world.preprocess linguistic_frame
 
 generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR)
 	python -m tts_world.preprocess acoustic
