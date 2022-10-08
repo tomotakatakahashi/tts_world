@@ -33,6 +33,7 @@ def _linguistic(labels_path: Path) -> np.array:
 def _acoustic(wav_path: Path) -> np.array:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
+    # TODO: time length is the same as linguistic?
     f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
