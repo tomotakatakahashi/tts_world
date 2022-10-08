@@ -19,7 +19,7 @@ _GENERATED_DIR = Path.cwd() / "generated"
 
 def _duration(labels_path: Path) -> np.array:
     labels = hts.load(labels_path)
-    dur = merlin.duration_features(labels)
+    dur = merlin.duration_features(labels).astype("float")
     return dur
 
 
