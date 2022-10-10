@@ -100,7 +100,7 @@ def main() -> None:
 
     np.save(args.output_dir / "mean.npy", mean)
     np.save(args.output_dir / "std.npy", std)
-    for input_path, result in zip(input_paths, results_normalized):
+    for input_path, result in tqdm(zip(input_paths, results_normalized), total=len(input_paths)):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
         np.save(output_path, result)
 
