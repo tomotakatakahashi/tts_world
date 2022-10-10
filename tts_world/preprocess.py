@@ -94,7 +94,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as exec:
-        results = list(tqdm(exec.map(args.process, input_paths)))
+        results = list(tqdm(exec.map(args.process, input_paths), total=len(input_paths)))
 
     results_normalized, mean, std = _normalize(results)
 
