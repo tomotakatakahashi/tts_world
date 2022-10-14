@@ -46,8 +46,8 @@ def _acoustic(wav_path: Path) -> np.array:
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", type=Path, default=None)
-    parser.add_argument("--output_dir", type=Path, default=None)
+    parser.add_argument("--input-dir", type=Path, default=None)
+    parser.add_argument("--output-dir", type=Path, default=None)
     subparsers = parser.add_subparsers()
 
     duration_parser = subparsers.add_parser("duration")
