@@ -1,6 +1,6 @@
 PACKAGE_DIR := tts_world
 
-JSUT_LABEL_DIR := ../jsut_label/
+JSUT_LABEL_DIR := ../jsut_label/labels/basic5000/
 JSUT_WAV_DIR := ../../datasets/jsut_ver1.1/basic5000/wav/
 
 
