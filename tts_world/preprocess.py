@@ -12,8 +12,6 @@ from nnmnkwii.frontend import merlin
 from nnmnkwii.io import hts
 from tqdm import tqdm
 
-_JSUT_BASIC5000_LABEL_DIR = Path.home() / "projects/jsut-label/labels/basic5000/"
-_JSUT_BASIC5000_WAV_DIR = Path.home() / "datasets/jsut_ver1.1/basic5000/wav/"
 _GENERATED_DIR = Path.cwd() / "generated"
 
 
