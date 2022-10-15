@@ -112,6 +112,7 @@ def main() -> None:
             tqdm(exec.map(args.process, input_paths), total=len(input_paths))
         )
 
+    # TODO: Stop using test data in train data
     mean = statistics_axis(results, np.mean)
     std = statistics_axis(results, np.std)
     np.save(args.output_dir / "mean.npy", mean)
