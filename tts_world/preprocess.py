@@ -23,17 +23,30 @@ def _duration(labels_path: Path) -> np.array:
     return dur
 
 
-def _linguistic_impl(labels_path: Path, add_frame_features=False, subphone_features=None) -> np.array:
+def _linguistic_impl(
+    labels_path: Path, add_frame_features=False, subphone_features=None
+) -> np.array:
     binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
     labels = hts.load(labels_path)
-    lng = merlin.linguistic_features(labels, binary_dict, numeric_dict, add_frame_features=add_frame_features, subphone_features=subphone_features)
+    lng = merlin.linguistic_features(
+        labels,
+        binary_dict,
+        numeric_dict,
+        add_frame_features=add_frame_features,
+        subphone_features=subphone_features,
+    )
     return lng
+
 
 def _linguistic(labels_path: Path) -> np.array:
     return _linguistic_impl(labels_path)
 
+
 def _linguistic_frame(labels_path: Path) -> np.array:
-    return _linguistic_impl(labels_path, add_frame_features=True, subphone_features='coarse_coding')
+    return _linguistic_impl(
+        labels_path, add_frame_features=True, subphone_features="coarse_coding"
+    )
+
 
 def _acoustic(wav_path: Path) -> np.array:
     wav, sr = librosa.load(str(wav_path))
@@ -43,6 +56,7 @@ def _acoustic(wav_path: Path) -> np.array:
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
     return aco
+
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -66,17 +80,40 @@ def _get_args() -> argparse.Namespace:
     return args
 
 
+def statistics_axis(arrays, func):
+    """
+    Memory-efficient impl of np.mean or np.std.
+    cf.
+    arrays_concat = np.concatenate(arrays, axis=0)
+    mean = np.mean(arrays_concat, axis=0)
+    std = np.std(arrays_concat, axis=0)
+    """
+    assert func in (np.mean, np.std)
+    assert isinstance(arrays, list) and len(arrays) > 0
+
+    result = np.zeros_like(arrays[0].shape[1:])
+    for i in range(len(result)):
+        arrays_concat = np.concatenate([array[i] for array in arrays], axis=0)
+        result[i] = func(arrays_concat, axis=0)
+    return result
+
+
 def _normalize(results):
-    results_concat = np.concatenate(results, axis=0)
-    mean = np.mean(results_concat, axis=0)
-    std = np.std(results_concat, axis=0)
+    mean = statistics_axis(results, np.mean)
+    std = statistics_axis(results, np.std)
 
     results_normalized = [
-        np.divide(result - np.expand_dims(mean, axis=0), np.expand_dims(std, axis=0), out=np.zeros_like(result), where=(std != 0))
+        np.divide(
+            result - np.expand_dims(mean, axis=0),
+            np.expand_dims(std, axis=0),
+            out=np.zeros_like(result),
+            where=(std != 0),
+        )
         for result in results
     ]
 
     return results_normalized, mean, std
+
 
 def main() -> None:
     """The main function."""
@@ -86,13 +123,17 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as exec:
-        results = list(tqdm(exec.map(args.process, input_paths), total=len(input_paths)))
+        results = list(
+            tqdm(exec.map(args.process, input_paths), total=len(input_paths))
+        )
 
     results_normalized, mean, std = _normalize(results)
 
     np.save(args.output_dir / "mean.npy", mean)
     np.save(args.output_dir / "std.npy", std)
-    for input_path, result in tqdm(zip(input_paths, results_normalized), total=len(input_paths)):
+    for input_path, result in tqdm(
+        zip(input_paths, results_normalized), total=len(input_paths)
+    ):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
         np.save(output_path, result)
 
