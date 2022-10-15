@@ -87,7 +87,8 @@ def statistics_axis(arrays, func):
     std = np.std(arrays_concat, axis=0)
     """
     assert func in (np.mean, np.std)
-    assert isinstance(arrays, list) and len(arrays) > 0
+    assert isinstance(arrays, list)
+    assert len(arrays) > 0
 
     result = np.zeros_like(arrays[0].shape[1:])
     for i in range(len(result)):
