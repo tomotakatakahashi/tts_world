@@ -1,5 +1,6 @@
 /tts_world.egg-info/
-/__pychache__/
+.ipynb_checkpoints/
+__pychache__/
 
 /.venv/
 /generated/
