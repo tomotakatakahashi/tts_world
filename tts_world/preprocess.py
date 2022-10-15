@@ -96,23 +96,6 @@ def statistics_axis(arrays, func):
     return result
 
 
-def _normalize(results):
-    mean = statistics_axis(results, np.mean)
-    std = statistics_axis(results, np.std)
-
-    results_normalized = [
-        np.divide(
-            result - np.expand_dims(mean, axis=0),
-            np.expand_dims(std, axis=0),
-            out=np.zeros_like(result),
-            where=(std != 0),
-        )
-        for result in results
-    ]
-
-    return results_normalized, mean, std
-
-
 def main() -> None:
     """The main function."""
 
@@ -125,15 +108,20 @@ def main() -> None:
             tqdm(exec.map(args.process, input_paths), total=len(input_paths))
         )
 
-    results_normalized, mean, std = _normalize(results)
-
+    mean = statistics_axis(results, np.mean)
+    std = statistics_axis(results, np.std)
     np.save(args.output_dir / "mean.npy", mean)
     np.save(args.output_dir / "std.npy", std)
-    for input_path, result in tqdm(
-        zip(input_paths, results_normalized), total=len(input_paths)
-    ):
+
+    for input_path, result in tqdm(zip(input_paths, results), total=len(input_paths)):
+        result_normalized = np.divide(
+            result - np.expand_dims(mean, axis=0),
+            np.expand_dims(std, axis=0),
+            out=np.zeros_like(result),
+            where=(std != 0),
+        )
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
-        np.save(output_path, result)
+        np.save(output_path, result_normalized)
 
 
 if __name__ == "__main__":
