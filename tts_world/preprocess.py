@@ -79,23 +79,22 @@ def _get_args() -> argparse.Namespace:
     return args
 
 
-def statistics_axis(arrays, func):
-    """
-    Memory-efficient impl of np.mean or np.std.
-    cf.
-    arrays_concat = np.concatenate(arrays, axis=0)
-    mean = np.mean(arrays_concat, axis=0)
-    std = np.std(arrays_concat, axis=0)
-    """
-    assert func in (np.mean, np.std)
-    assert isinstance(arrays, list)
-    assert len(arrays) > 0
+def _normalize(results):
+    results_concat = np.concatenate(results, axis=0)
+    mean = np.mean(results_concat, axis=0)
+    std = np.std(results_concat, axis=0)
 
-    result = np.zeros_like(arrays[0][0], dtype="double")
-    for i in range(len(result)):
-        arrays_concat = np.concatenate([array[:, i] for array in arrays], axis=0)
-        result[i] = func(arrays_concat, axis=0)
-    return result
+    results_normalized = [
+        np.divide(
+            result - np.expand_dims(mean, axis=0),
+            np.expand_dims(std, axis=0),
+            out=np.zeros_like(result),
+            where=(std != 0),
+        )
+        for result in results
+    ]
+
+    return results_normalized, mean, std
 
 
 def main() -> None:
@@ -112,20 +111,15 @@ def main() -> None:
             tqdm(exec.map(args.process, input_paths), total=len(input_paths))
         )
 
-    mean = statistics_axis(results, np.mean)
-    std = statistics_axis(results, np.std)
+    results_normalized, mean, std = _normalize(results)
+
     np.save(args.output_dir / "mean.npy", mean)
     np.save(args.output_dir / "std.npy", std)
-
-    for input_path, result in tqdm(zip(input_paths, results), total=len(input_paths)):
-        result_normalized = np.divide(
-            result - np.expand_dims(mean, axis=0),
-            np.expand_dims(std, axis=0),
-            out=np.zeros_like(result),
-            where=(std != 0),
-        )
+    for input_path, result in tqdm(
+        zip(input_paths, results_normalized), total=len(input_paths)
+    ):
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
-        np.save(output_path, result_normalized)
+        np.save(output_path, result)
 
 
 if __name__ == "__main__":
