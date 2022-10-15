@@ -13,15 +13,16 @@ test:
 	mypy --disallow-untyped-defs --no-implicit-optional $(PACKAGE_DIR)
 
 generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
-	python -m tts_world.preprocess duration
+	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ duration
 
 generated/linguistic: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
-	python -m tts_world.preprocess linguistic
+	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ linguistic
+
 generated/linguistic_frame: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
-	python -m tts_world.preprocess linguistic_frame
+	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ linguistic_frame
 
 generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR)
-	python -m tts_world.preprocess acoustic
+	python -m tts_world.preprocess --input-dir $(JSUT_WAV_DIR) --output-dir $@ acoustic
 
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"

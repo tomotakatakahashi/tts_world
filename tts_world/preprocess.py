@@ -52,23 +52,15 @@ def _get_args() -> argparse.Namespace:
 
     duration_parser = subparsers.add_parser("duration")
     duration_parser.set_defaults(process=_duration)
-    duration_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
-    duration_parser.set_defaults(output_dir=_GENERATED_DIR / "duration")
 
     linguistic_parser = subparsers.add_parser("linguistic")
     linguistic_parser.set_defaults(process=_linguistic)
-    linguistic_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
-    linguistic_parser.set_defaults(output_dir=_GENERATED_DIR / "linguistic")
 
     linguistic_frame_parser = subparsers.add_parser("linguistic_frame")
     linguistic_frame_parser.set_defaults(process=_linguistic_frame)
-    linguistic_frame_parser.set_defaults(input_dir=_JSUT_BASIC5000_LABEL_DIR)
-    linguistic_frame_parser.set_defaults(output_dir=_GENERATED_DIR / "linguistic_frame")
 
     acoustic_parser = subparsers.add_parser("acoustic")
     acoustic_parser.set_defaults(process=_acoustic)
-    acoustic_parser.set_defaults(input_dir=_JSUT_BASIC5000_WAV_DIR)
-    acoustic_parser.set_defaults(output_dir=_GENERATED_DIR / "acoustic")
 
     args = parser.parse_args()
     return args
