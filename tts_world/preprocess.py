@@ -60,6 +60,7 @@ def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-dir", type=Path, default=None)
     parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument("--slice", type=int, default=None)
     subparsers = parser.add_subparsers()
 
     duration_parser = subparsers.add_parser("duration")
@@ -102,6 +103,8 @@ def main() -> None:
 
     args = _get_args()
     input_paths = sorted(args.input_dir.glob("*"))
+    if args.slice is not None:
+        input_paths = input_paths[: args.slice]
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as exec:
