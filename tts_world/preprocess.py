@@ -115,8 +115,8 @@ def main() -> None:
     # TODO: Stop using test data in train data
     mean = statistics_axis(results, np.mean)
     std = statistics_axis(results, np.std)
-    np.save(args.output_dir / "mean.npy", mean)
-    np.save(args.output_dir / "std.npy", std)
+    np.save(args.output_dir / "mean.npy", mean.astype(np.float32))
+    np.save(args.output_dir / "std.npy", std.astype(np.float32))
 
     for input_path, result in tqdm(zip(input_paths, results), total=len(input_paths)):
         result_normalized = np.divide(
@@ -126,7 +126,7 @@ def main() -> None:
             where=(std != 0),
         )
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
-        np.save(output_path, result_normalized)
+        np.save(output_path, result_normalized.astype(np.float32))
 
 
 if __name__ == "__main__":
