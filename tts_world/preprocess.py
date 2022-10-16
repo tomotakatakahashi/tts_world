@@ -108,6 +108,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as exec:
+        # TODO: arg.preocess should return np.float32 array
         results = list(
             tqdm(exec.map(args.process, input_paths), total=len(input_paths))
         )
