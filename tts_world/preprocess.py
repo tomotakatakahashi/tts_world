@@ -13,12 +13,12 @@ from nnmnkwii.io import hts
 from tqdm import tqdm
 
 _GENERATED_DIR = Path.cwd() / "generated"
-_FLOAT_TYPE = np.float32
+_FloatType = np.float32
 
 
 def _duration(labels_path: Path) -> np.array:
     labels = hts.load(labels_path)
-    dur = merlin.duration_features(labels).astype(_FLOAT_TYPE)
+    dur = merlin.duration_features(labels).astype(_FloatType)
     return dur
 
 
@@ -34,7 +34,7 @@ def _linguistic_impl(
         add_frame_features=add_frame_features,
         subphone_features=subphone_features,
     )
-    return lng.as_type(_FLOAT_TYPE)
+    return lng.as_type(_FloatType)
 
 
 def _linguistic(labels_path: Path) -> np.array:
@@ -54,7 +54,7 @@ def _acoustic(wav_path: Path) -> np.array:
     f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
-    return aco.astype(_FLOAT_TYPE)
+    return aco.astype(_FloatType)
 
 
 def _get_args() -> argparse.Namespace:
@@ -92,10 +92,10 @@ def statistics_axis(arrays, func):
     assert isinstance(arrays, list)
     assert len(arrays) > 0
 
-    result = np.zeros_like(arrays[0][0], dtype=_FLOAT_TYPE)
+    result = np.zeros_like(arrays[0][0], dtype=_FloatType)
     for i in range(len(result)):
         arrays_concat = np.concatenate([array[:, i] for array in arrays], axis=0)
-        result[i] = func(arrays_concat, axis=0, dtype=_FLOAT_TYPE)
+        result[i] = func(arrays_concat, axis=0, dtype=_FloatType)
     return result
 
 
@@ -116,18 +116,18 @@ def main() -> None:
     # TODO: Stop using test data in train data
     mean = statistics_axis(results, np.mean)
     std = statistics_axis(results, np.std)
-    np.save(args.output_dir / "mean.npy", mean.astype(_FLOAT_TYPE))
-    np.save(args.output_dir / "std.npy", std.astype(_FLOAT_TYPE))
+    np.save(args.output_dir / "mean.npy", mean.astype(_FloatType))
+    np.save(args.output_dir / "std.npy", std.astype(_FloatType))
 
     for input_path, result in tqdm(zip(input_paths, results), total=len(input_paths)):
         result_normalized = np.divide(
             result - np.expand_dims(mean, axis=0),
             np.expand_dims(std, axis=0),
-            out=np.zeros_like(result, dtype=_FLOAT_TYPE),
+            out=np.zeros_like(result, dtype=_FloatType),
             where=(std != 0),
         )
         output_path = (args.output_dir / input_path.name).with_suffix(".npy")
-        np.save(output_path, result_normalized.astype(_FLOAT_TYPE))
+        np.save(output_path, result_normalized.astype(_FloatType))
 
 
 if __name__ == "__main__":
