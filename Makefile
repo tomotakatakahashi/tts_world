@@ -18,6 +18,9 @@ generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 generated/linguistic: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ linguistic
 
+generated/duration_model.h5: $(PACKAGE_DIR) generated/duration generated/linguistic
+	python -m tts_world.train_duration
+
 generated/linguistic_frame: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ linguistic_frame
 
