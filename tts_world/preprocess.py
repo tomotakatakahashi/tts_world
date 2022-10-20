@@ -51,7 +51,7 @@ def _acoustic(wav_path: Path) -> np.array:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
     # TODO: time length is the same as linguistic_frame?
-    f0, sp, ap = pw.wav2world(wav.astype("double"), sr)
+    f0, sp, ap = pw.wav2world(wav.astype("double"), sr)  # pylint: disable=no-member
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
     return aco.astype(_FloatType)
@@ -108,9 +108,9 @@ def main() -> None:
         input_paths = input_paths[: args.slice]
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    with concurrent.futures.ProcessPoolExecutor() as exec:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
         results = list(
-            tqdm(exec.map(args.process, input_paths), total=len(input_paths))
+            tqdm(executor.map(args.process, input_paths), total=len(input_paths))
         )
 
     # TODO: Stop using test data in train data
