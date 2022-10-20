@@ -37,7 +37,7 @@ def _linguistic_impl(
         add_frame_features=add_frame_features,
         subphone_features=subphone_features,
     )
-    return lng.as_type(_FloatType)
+    return lng.astype(_FloatType)
 
 
 def _linguistic(labels_path: Path) -> np.ndarray:
