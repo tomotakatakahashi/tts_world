@@ -93,7 +93,7 @@ def statistics_axis(arrays, func):
     assert len(arrays) > 0
 
     result = np.zeros_like(arrays[0][0], dtype=_FloatType)
-    for i in range(len(result)):
+    for i in range(result.shape[0]):
         arrays_concat = np.concatenate([array[:, i] for array in arrays], axis=0)
         result[i] = func(arrays_concat, axis=0, dtype=_FloatType)
     return result
