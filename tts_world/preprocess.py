@@ -1,8 +1,9 @@
 """Preprocess script for JSUT dataset."""
 
 import argparse
-import concurrent
+import concurrent.futures
 from pathlib import Path
+from typing import Optional
 
 import librosa
 import numpy as np
@@ -16,15 +17,17 @@ _GENERATED_DIR = Path.cwd() / "generated"
 _FloatType = np.float32
 
 
-def _duration(labels_path: Path) -> np.array:
+def _duration(labels_path: Path) -> np.ndarray:
     labels = hts.load(labels_path)
     dur = merlin.duration_features(labels).astype(_FloatType)
     return dur
 
 
 def _linguistic_impl(
-    labels_path: Path, add_frame_features=False, subphone_features=None
-) -> np.array:
+    labels_path: Path,
+    add_frame_features: bool = False,
+    subphone_features: Optional[str] = None,
+) -> np.ndarray:
     binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
     labels = hts.load(labels_path)
     lng = merlin.linguistic_features(
@@ -37,17 +40,17 @@ def _linguistic_impl(
     return lng.as_type(_FloatType)
 
 
-def _linguistic(labels_path: Path) -> np.array:
+def _linguistic(labels_path: Path) -> np.ndarray:
     return _linguistic_impl(labels_path)
 
 
-def _linguistic_frame(labels_path: Path) -> np.array:
+def _linguistic_frame(labels_path: Path) -> np.ndarray:
     return _linguistic_impl(
         labels_path, add_frame_features=True, subphone_features="coarse_coding"
     )
 
 
-def _acoustic(wav_path: Path) -> np.array:
+def _acoustic(wav_path: Path) -> np.ndarray:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
     # TODO: time length is the same as linguistic_frame?
