@@ -3,7 +3,7 @@
 import argparse
 import concurrent.futures
 from pathlib import Path
-from typing import Optional
+from typing import Callable, List, Optional
 
 import librosa
 import numpy as np
@@ -83,7 +83,7 @@ def _get_args() -> argparse.Namespace:
     return args
 
 
-def statistics_axis(arrays, func):
+def statistics_axis(arrays: List[np.ndarray], func: Callable) -> np.ndarray:
     """
     Memory-efficient impl of np.mean or np.std.
     cf.
