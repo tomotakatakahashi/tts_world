@@ -16,6 +16,10 @@ from tqdm import tqdm
 _GENERATED_DIR = Path.cwd() / "generated"
 _FloatType = np.float32
 
+_TRAIN_RANGE = (0, 4000)
+_VAL_RANGE = (4000, 4500)
+_TEST_RANGE = (4500, 5000)
+
 
 def _duration(labels_path: Path) -> np.ndarray:
     labels = hts.load(labels_path)
@@ -116,20 +120,30 @@ def main() -> None:
             tqdm(executor.map(args.process, input_paths), total=len(input_paths))
         )
 
-    # TODO: Stop using test data in train data
-    mean = statistics_axis(results, np.mean)
-    std = statistics_axis(results, np.std)
+    mean = statistics_axis(results[_TRAIN_RANGE[0] : _TRAIN_RANGE[1]], np.mean)
+    std = statistics_axis(results[_TRAIN_RANGE[0] : _TRAIN_RANGE[1]], np.std)
     np.save(args.output_dir / "mean.npy", mean.astype(_FloatType))
     np.save(args.output_dir / "std.npy", std.astype(_FloatType))
 
-    for input_path, result in tqdm(zip(input_paths, results), total=len(input_paths)):
+    for i, (input_path, result) in tqdm(
+        enumerate(zip(input_paths, results)), total=len(input_paths)
+    ):
         result_normalized = np.divide(
             result - np.expand_dims(mean, axis=0),
             np.expand_dims(std, axis=0),
             out=np.zeros_like(result, dtype=_FloatType),
             where=(std != 0),
         )
-        output_path = (args.output_dir / input_path.name).with_suffix(".npy")
+        if _TRAIN_RANGE[0] <= i < _TRAIN_RANGE[1]:
+            output_dir = args.output_dir / "train"
+        elif _VAL_RANGE[0] <= i < _VAL_RANGE[1]:
+            output_dir = args.output_dir / "val"
+        elif _TEST_RANGE[0] <= i < _TEST_RANGE[1]:
+            output_dir = args.output_dir / "test"
+        else:
+            raise RuntimeError
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = (output_dir / input_path.name).with_suffix(".npy")
         np.save(output_path, result_normalized.astype(_FloatType))
 
 
