@@ -134,9 +134,9 @@ def main() -> None:
     )  # Concat (f0, sp, ap)
     acoustic_predicted = _unnormalize(acoustic_normalized, acoustic_mean, acoustic_std)
 
-    f0 = acoustic_predicted[:, 0]
-    sp = acoustic_predicted[:, 1:514]
-    ap = acoustic_predicted[:, 514:]
+    f0 = acoustic_predicted[:, 0].astype(np.float64)
+    sp = acoustic_predicted[:, 1:514].astype(np.float64)
+    ap = acoustic_predicted[:, 514:].astype(np.float64)
 
     audio = pw.synthesize(f0, sp, ap, SAMPLING_RATE)
     sf.write(args.output_path, audio, SAMPLING_RATE, subtype="PCM_24")
