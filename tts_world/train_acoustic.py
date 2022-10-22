@@ -1,7 +1,7 @@
 """Train an acoustic model."""
 
 from pathlib import Path
-from typing import Iterator, List, Tuple
+from typing import Iterator, Tuple
 
 import numpy as np
 import tensorflow as tf
