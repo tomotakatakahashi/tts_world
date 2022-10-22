@@ -1,5 +1,6 @@
 """Train an acoustic model."""
 
+import argparse
 from pathlib import Path
 from typing import Iterator, Tuple
 
@@ -122,15 +123,27 @@ def get_model(input_dim: int = 329) -> tf.keras.Model:
     return model
 
 
-model = get_model()
-model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-    loss=(MSE(), MSE(), MSE()),
-)
+def _get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs", type=int, default=1000)
+    args = parser.parse_args()
+    return args
 
 
-train_ds = get_dataset("train")
-val_ds = get_dataset("val")
-model.fit(train_ds, validation_data=val_ds, epochs=1000)
+def main() -> None:
+    """Main."""
+    model = get_model()
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        loss=(MSE(), MSE(), MSE()),
+    )
 
-model.save(GENERATED_DIR / "acoustic_model.h5")
+    train_ds = get_dataset("train")
+    val_ds = get_dataset("val")
+    model.fit(train_ds, validation_data=val_ds, epochs=1000)
+
+    model.save(GENERATED_DIR / "acoustic_model.h5")
+
+
+if __name__ == "__main__":
+    main()
