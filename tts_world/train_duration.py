@@ -1,4 +1,4 @@
-"""Train the duration model."""
+"""Train a duration model."""
 
 from pathlib import Path
 
