@@ -139,7 +139,7 @@ def main() -> None:
     ap = acoustic_predicted[:, 514:].astype(np.float64)
 
     audio = pw.synthesize(f0, sp, ap, SAMPLING_RATE)
-    sf.write(args.output_path, audio, SAMPLING_RATE, subtype="PCM_24")
+    sf.write(str(args.output_path), audio, SAMPLING_RATE, subtype="PCM_24")
 
 
 if __name__ == "__main__":
