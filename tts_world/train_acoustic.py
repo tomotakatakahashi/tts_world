@@ -93,7 +93,7 @@ def _extend(ipt: tf.Tensor, name: str) -> tf.Tensor:
     x = Conv1DTranspose(1, 3, strides=2, padding="same")(x)
     x = Flatten()(x)
     last = Dense(1)(x)
-    x = Concatenate(name=f"{name}_out")([x, last])
+    x = Concatenate(name=name)([x, last])
     return x
 
 
