@@ -7,6 +7,7 @@ from typing import Iterator, Tuple
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import *
+from tensorflow.keras.losses import BinaryCrossentropy as BC
 from tensorflow.keras.losses import MeanSquaredError as MSE
 
 GENERATED_DIR = Path.cwd() / "generated"
@@ -40,22 +41,25 @@ def get_dataset(kind: str) -> tf.data.Dataset:
         generator,
         output_signature=(
             tf.TensorSpec(shape=(None, 329), dtype=tf.float32),
-            tf.TensorSpec(shape=(None, 1027), dtype=tf.float32),
+            tf.TensorSpec(shape=(None, 1 + 1 + 513 + 513), dtype=tf.float32),
         ),
     )
 
     def convert(dataset: tf.data.Dataset) -> tf.data.Dataset:
         lng = dataset.map(lambda x, y: x).flat_map(tf.data.Dataset.from_tensor_slices)
-        f0 = dataset.map(lambda x, y: y[:, 0:1]).flat_map(
+        flag = dataset.map(lambda x, y: y[:, 0:1]).flat_map(
             tf.data.Dataset.from_tensor_slices
         )
-        sp = dataset.map(lambda x, y: y[:, 1:514]).flat_map(
+        lf0 = dataset.map(lambda x, y: y[:, 1:2]).flat_map(
             tf.data.Dataset.from_tensor_slices
         )
-        ap = dataset.map(lambda x, y: y[:, 514:1027]).flat_map(
+        sp = dataset.map(lambda x, y: y[:, 2 : 2 + 513]).flat_map(
             tf.data.Dataset.from_tensor_slices
         )
-        target = tf.data.Dataset.zip((f0, sp, ap))
+        ap = dataset.map(lambda x, y: y[:, 2 + 513 :]).flat_map(
+            tf.data.Dataset.from_tensor_slices
+        )
+        target = tf.data.Dataset.zip((flag, lf0, sp, ap))
         return tf.data.Dataset.zip((lng, target))
 
     dataset = (
@@ -94,7 +98,7 @@ def _extend(ipt: tf.Tensor, name: str) -> tf.Tensor:
 
 
 def get_model(input_dim: int = 329) -> tf.keras.Model:
-    """Get model. (None, 319) -> ((None, 1), (None, 513), (None, 513))"""
+    """Get model. (None, 319) -> ((None, 1), (None, 1), (None, 513), (None, 513))"""
     ipt = tf.keras.layers.Input(shape=(input_dim,))
     x = tf.keras.layers.Dense(
         256,
@@ -113,9 +117,12 @@ def get_model(input_dim: int = 329) -> tf.keras.Model:
     )(x)
     x = tf.keras.layers.ReLU()(x)
 
-    f0_out = tf.keras.layers.Dense(1, name="f0")(x)
+    flag_out = tf.keras.layers.Dense(1, name="flag")(x)
+    lf0_out = tf.keras.layers.Dense(1, name="lf0")(x)
 
-    model = tf.keras.models.Model(inputs=ipt, outputs=(f0_out, sp_out, ap_out))
+    model = tf.keras.models.Model(
+        inputs=ipt, outputs=(flag_out, lf0_out, sp_out, ap_out)
+    )
     return model
 
 
@@ -133,7 +140,12 @@ def main() -> None:
     model = get_model()
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-        loss=(MSE(), MSE(), MSE()),
+        loss=(
+            MSE(),  # TODO: Use BinaryCrossentropy for the first flag
+            MSE(),
+            MSE(),
+            MSE(),
+        ),
     )
 
     train_ds = get_dataset("train")

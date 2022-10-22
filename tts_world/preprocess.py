@@ -11,6 +11,7 @@ import pyworld as pw
 import ttslearn
 from nnmnkwii.frontend import merlin
 from nnmnkwii.io import hts
+from nnmnkwii.preprocessing.f0 import interp1d
 from tqdm import tqdm
 
 _GENERATED_DIR = Path.cwd() / "generated"
@@ -58,9 +59,14 @@ def _acoustic(wav_path: Path, lng_path: Path) -> np.ndarray:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
     f0, sp, ap = pw.wav2world(wav.astype("double"), sr)  # pylint: disable=no-member
+    voice_flag = (f0 != 0).astype(_FloatType)
+    lf0 = np.log(interp1d(f0, kind="linear"))
     sp = np.log(sp)
-    aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
-    assert aco.shape[-1] == 1 + 513 + 513
+    aco = np.concatenate(
+        [np.expand_dims(voice_flag, axis=-1), np.expand_dims(lf0, axis=-1), sp, ap],
+        axis=-1,
+    )
+    assert aco.shape[-1] == 1 + 1 + 513 + 513
 
     # Truncate - is this correct?
     linguistic_frame = np.load(lng_path)
