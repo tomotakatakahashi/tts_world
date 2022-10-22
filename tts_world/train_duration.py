@@ -67,4 +67,4 @@ val_ds = get_dataset("val")
 
 model.fit(train_ds, validation_data=val_ds, epochs=100)
 
-model.save("duration_model.h5")
+model.save(GENERATED_DIR / "duration_model.h5")
