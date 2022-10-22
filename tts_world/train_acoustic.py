@@ -35,15 +35,12 @@ def get_dataset(kind: str) -> tf.data.Dataset:
         for ac_arr, ln_arr in zip(acoustic_arrays, linguistic_arrays)
     ]
 
-    def generator(
-        linguistic_arrays: List[np.ndarray], acoustic_arrays: List[np.ndarray]
-    ) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+    def generator() -> Iterator[Tuple[np.ndarray, np.ndarray]]:
         for lng, aco in zip(linguistic_arrays, acoustic_arrays):
             yield lng, aco
 
     whole_ds = tf.data.Dataset.from_generator(
         generator,
-        args=(linguistic_arrays, acoustic_arrays),
         output_signature=(
             tf.TensorSpec(shape=(None, 329), dtype=tf.float32),
             tf.TensorSpec(shape=(None, 1027), dtype=tf.float32),
