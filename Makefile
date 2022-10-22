@@ -30,6 +30,9 @@ generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR) generated/linguistic_frame
 generated/acoustic_model.h5: $(PACKAGE_DIR) generated/linguistic_frame generated/acoustic
 	python -m tts_world.train_acoustic
 
+output.wav: $(PACKAGE_DIR) generated/acoustic_model.h5 generated/duration_model.h5 generated/linguistic generated/duration generated/linguistic_frame generated/acoustic
+	python -m tts_world.tts generated/acoustic_model.h5 generated/duration_model.h5 "吾輩は猫である"
+
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"
 
