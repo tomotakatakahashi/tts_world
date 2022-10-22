@@ -21,7 +21,7 @@ _VAL_RANGE = (4000, 4500)
 _TEST_RANGE = (4500, 5000)
 
 
-def _duration(labels_path: Path) -> np.ndarray:
+def _duration(labels_path: Path, _: None) -> np.ndarray:
     labels = hts.load(labels_path)
     dur = merlin.duration_features(labels).astype(_FloatType)
     return dur
@@ -44,23 +44,28 @@ def _linguistic_impl(
     return lng.astype(_FloatType)
 
 
-def _linguistic(labels_path: Path) -> np.ndarray:
+def _linguistic(labels_path: Path, _: None) -> np.ndarray:
     return _linguistic_impl(labels_path)
 
 
-def _linguistic_frame(labels_path: Path) -> np.ndarray:
+def _linguistic_frame(labels_path: Path, _: None) -> np.ndarray:
     return _linguistic_impl(
         labels_path, add_frame_features=True, subphone_features="coarse_coding"
     )
 
 
-def _acoustic(wav_path: Path) -> np.ndarray:
+def _acoustic(wav_path: Path, lng_path: Path) -> np.ndarray:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
-    # TODO: time length is the same as linguistic_frame?
     f0, sp, ap = pw.wav2world(wav.astype("double"), sr)  # pylint: disable=no-member
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
+
+    # Truncate - is this correct?
+    linguistic_frame = np.load(lng_path)
+    assert len(linguistic_frame) <= len(aco)
+    aco = aco[: len(linguistic_frame)]
+
     return aco.astype(_FloatType)
 
 
@@ -68,6 +73,7 @@ def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("input_dir", type=Path)
     parser.add_argument("output_dir", type=Path)
+    parser.add_argument("--extra-dir", type=Path, default=None)
     parser.add_argument("--slice", type=int, default=None)
     subparsers = parser.add_subparsers()
 
@@ -111,13 +117,30 @@ def main() -> None:
 
     args = _get_args()
     input_paths = sorted(args.input_dir.glob("*"))
+    extra_paths = (
+        sum(
+            (
+                sorted((args.extra_dir / kind).glob("*"))
+                for kind in ["train", "val", "test"]
+            ),
+            [],
+        )
+        if args.extra_dir is not None
+        else [None] * len(input_paths)
+    )
+    assert len(input_paths) == len(extra_paths)
     if args.slice is not None:
         input_paths = input_paths[: args.slice]
+        extra_paths = extra_paths[: args.slice]
+
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = list(
-            tqdm(executor.map(args.process, input_paths), total=len(input_paths))
+            tqdm(
+                executor.map(args.process, input_paths, extra_paths),
+                total=len(input_paths),
+            )
         )
 
     mean = statistics_axis(results[_TRAIN_RANGE[0] : _TRAIN_RANGE[1]], np.mean)

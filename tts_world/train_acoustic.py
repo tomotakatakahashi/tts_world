@@ -28,13 +28,9 @@ def get_dataset(kind: str) -> tf.data.Dataset:
 
     acoustic_arrays = [np.load(path) for path in acoustic_paths]
     linguistic_arrays = [np.load(path) for path in linguistic_paths]
-
-    # Truncate, same length
-    # TODO: Do it in preprocess
-    acoustic_arrays = [
-        ac_arr[: len(ln_arr)]
-        for ac_arr, ln_arr in zip(acoustic_arrays, linguistic_arrays)
-    ]
+    assert all(
+        len(aco) == len(lng) for aco, lng in zip(acoustic_arrays, linguistic_arrays)
+    )
 
     def generator() -> Iterator[Tuple[np.ndarray, np.ndarray]]:
         for lng, aco in zip(linguistic_arrays, acoustic_arrays):
