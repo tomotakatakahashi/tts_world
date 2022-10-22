@@ -73,7 +73,7 @@ def get_dataset(kind: str) -> tf.data.Dataset:
     return dataset
 
 
-def _extend(ipt: tf.keras.Tensor, name: str) -> tf.keras.Tensor:
+def _extend(ipt: tf.Tensor, name: str) -> tf.Tensor:
 
     resid_feature = Reshape((1, -1))(
         Dense(32, activation="relu", name=f"{name}_res_f")(ipt)
@@ -99,7 +99,7 @@ def _extend(ipt: tf.keras.Tensor, name: str) -> tf.keras.Tensor:
     return x
 
 
-def get_model(input_dim=329):
+def get_model(input_dim: int = 329) -> tf.keras.Model:
     """Get model. (None, 319) -> ((None, 1), (None, 513), (None, 513))"""
     ipt = tf.keras.layers.Input(shape=(input_dim,))
     x = tf.keras.layers.Dense(
