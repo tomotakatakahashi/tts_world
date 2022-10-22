@@ -31,6 +31,11 @@ def _get_args() -> argparse.Namespace:
         default=Path(__file__).resolve().parent / "../generated/linguistic",
     )
     parser.add_argument(
+        "--generated-duration",
+        type=Path,
+        default=Path(__file__).resolve().parent / "../generated/duration",
+    )
+    parser.add_argument(
         "--generated-linguistic-frame",
         type=Path,
         default=Path(__file__).resolve().parent / "../generated/linguistic_frame",
@@ -101,6 +106,9 @@ def main() -> None:
     acoustic_mean = np.load(args.generated_acoustic / "mean.npy")
     acoustic_std = np.load(args.generated_acoustic / "std.npy")
 
+    duration_mean = np.load(args.generated_duration / "mean.npy")
+    duration_std = np.load(args.generated_duration / "std.npy")
+
     labels = _get_labels(args.text)
 
     linguistic_features = _get_linguistic_features(labels)
@@ -108,7 +116,7 @@ def main() -> None:
         _normalize(linguistic_features, linguistic_mean, linguistic_std)
     )
     durations_predicted = _unnormalize(
-        durations_normalized, linguistic_mean, linguistic_std
+        durations_normalized, duration_mean, duration_std
     )
 
     labels.set_durations(durations_predicted)
