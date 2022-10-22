@@ -24,8 +24,8 @@ generated/duration_model.h5: $(PACKAGE_DIR) generated/duration generated/linguis
 generated/linguistic_frame: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
 	python -m tts_world.preprocess $(JSUT_LABEL_DIR) $@ linguistic_frame
 
-generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR)
-	python -m tts_world.preprocess $(JSUT_WAV_DIR) $@ acoustic
+generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR) generated/linguistic_frame
+	python -m tts_world.preprocess $(JSUT_WAV_DIR) $@ --extra-dir generated/linguistic_frame acoustic
 
 generated/acoustic_model.h5: $(PACKAGE_DIR) generated/linguistic_frame generated/acoustic
 	python -m tts_world.train_acoustic
