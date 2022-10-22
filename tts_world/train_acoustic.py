@@ -148,9 +148,18 @@ def main() -> None:
         ),
     )
 
+    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+        filepath=GENERATED_DIR / "acoustic_models" / "{epoch:04d}.h5",
+    )
+
     train_ds = get_dataset("train")
     val_ds = get_dataset("val")
-    model.fit(train_ds, validation_data=val_ds, epochs=args.epochs)
+    model.fit(
+        train_ds,
+        validation_data=val_ds,
+        epochs=args.epochs,
+        callbacks=[model_checkpoint_callback],
+    )
 
     model.save(GENERATED_DIR / "acoustic_model.h5")
 
