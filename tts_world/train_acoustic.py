@@ -16,8 +16,8 @@ ACOUSTIC_DIR = GENERATED_DIR / "acoustic"
 LINGUISTIC_DIR = GENERATED_DIR / "linguistic_frame"
 
 BATCH_SIZE = 2**15
-DS_SHUFFLE_BUFFER = 3
-DS_PREFETCH = 5
+DS_SHUFFLE_BUFFER = 10
+DS_PREFETCH = 10
 
 
 def get_dataset(kind: str) -> tf.data.Dataset:
