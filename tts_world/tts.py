@@ -2,11 +2,13 @@
 
 import argparse
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 import pyopenjtalk
 import pyworld as pw
 import soundfile as sf
+import tensorflow as tf
 import ttslearn
 from nnmnkwii.frontend import merlin
 from nnmnkwii.io import hts
@@ -67,7 +69,9 @@ def _get_labels(text: str) -> hts.HTSLabelFile:
 
 # TODO: Integrate with preprocess.py
 def _get_linguistic_features(
-    labels: hts.HTSLabelFile, add_frame_features=False, subphone_features=None
+    labels: hts.HTSLabelFile,
+    add_frame_features: bool = False,
+    subphone_features: Optional[str] = None,
 ) -> np.ndarray:
     binary_dict, numeric_dict = hts.load_question_set(ttslearn.util.example_qst_file())
     lng = merlin.linguistic_features(
@@ -117,7 +121,7 @@ def main() -> None:
             linguistic_frame_features, linguistic_frame_mean, linguistic_frame_std
         )
     )
-    acoustic_normalized = np.concatenat(
+    acoustic_normalized = np.concatenate(
         acoustic_normalized, axis=-1
     )  # Concat (f0, sp, ap)
     acoustic_predicted = _unnormalize(acoustic_normalized, acoustic_mean, acoustic_std)
