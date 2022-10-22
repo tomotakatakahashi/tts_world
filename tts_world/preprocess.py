@@ -58,6 +58,7 @@ def _acoustic(wav_path: Path, lng_path: Path) -> np.ndarray:
     wav, sr = librosa.load(str(wav_path))
     # TODO: Use world_spss_params
     f0, sp, ap = pw.wav2world(wav.astype("double"), sr)  # pylint: disable=no-member
+    sp = np.log(sp)
     aco = np.concatenate([np.expand_dims(f0, axis=-1), sp, ap], axis=-1)
     assert aco.shape[-1] == 1 + 513 + 513
 
