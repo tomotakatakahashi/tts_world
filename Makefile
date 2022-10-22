@@ -13,19 +13,19 @@ test:
 	mypy --disallow-untyped-defs --no-implicit-optional $(PACKAGE_DIR)
 
 generated/duration: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
-	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ duration
+	python -m tts_world.preprocess $(JSUT_LABEL_DIR) $@ duration
 
 generated/linguistic: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
-	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ linguistic
+	python -m tts_world.preprocess $(JSUT_LABEL_DIR) $@ linguistic
 
 generated/duration_model.h5: $(PACKAGE_DIR) generated/duration generated/linguistic
 	python -m tts_world.train_duration
 
 generated/linguistic_frame: $(PACKAGE_DIR) $(JSUT_LABEL_DIR)
-	python -m tts_world.preprocess --input-dir $(JSUT_LABEL_DIR) --output-dir $@ linguistic_frame
+	python -m tts_world.preprocess $(JSUT_LABEL_DIR) $@ linguistic_frame
 
 generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR)
-	python -m tts_world.preprocess --input-dir $(JSUT_WAV_DIR) --output-dir $@ acoustic
+	python -m tts_world.preprocess $(JSUT_WAV_DIR) $@ acoustic
 
 generated/acoustic_model.h5: $(PACKAGE_DIR) generated/linguistic_frame generated/acoustic
 	python -m tts_world.train_acoustic

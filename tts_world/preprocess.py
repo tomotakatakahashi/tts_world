@@ -66,8 +66,8 @@ def _acoustic(wav_path: Path) -> np.ndarray:
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input-dir", type=Path, default=None)
-    parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument("input_dir", type=Path)
+    parser.add_argument("output_dir", type=Path)
     parser.add_argument("--slice", type=int, default=None)
     subparsers = parser.add_subparsers()
 
