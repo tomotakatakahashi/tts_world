@@ -28,7 +28,7 @@ generated/acoustic: $(PACKAGE_DIR) $(JSUT_WAV_DIR)
 	python -m tts_world.preprocess --input-dir $(JSUT_WAV_DIR) --output-dir $@ acoustic
 
 generated/acoustic_model.h5: $(PACKAGE_DIR) generated/linguistic_frame generated/acoustic
-	python -m tts_world.preprocess
+	python -m tts_world.train_acoustic
 
 ${DATASET_DIR}/jsut_ver1.1.zip:
 	echo "Please download jsut_ver1.1.zip from here. https://sites.google.com/site/shinnosuketakamichi/publication/jsut"
