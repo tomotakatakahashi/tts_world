@@ -132,6 +132,8 @@ def _get_args() -> argparse.Namespace:
 
 def main() -> None:
     """Main."""
+    args = _get_args()
+
     model = get_model()
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
@@ -140,7 +142,7 @@ def main() -> None:
 
     train_ds = get_dataset("train")
     val_ds = get_dataset("val")
-    model.fit(train_ds, validation_data=val_ds, epochs=1000)
+    model.fit(train_ds, validation_data=val_ds, epochs=args.epochs)
 
     model.save(GENERATED_DIR / "acoustic_model.h5")
 
