@@ -149,7 +149,7 @@ def main() -> None:
     )
 
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=GENERATED_DIR / "acoustic_models" / "{epoch:04d}.h5",
+        filepath=GENERATED_DIR / "acoustic_models" / "{epoch:04d}-{val_loss:.2f}.h5",
     )
 
     train_ds = get_dataset("train")
